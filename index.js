@@ -3,6 +3,13 @@ const path = require('path');
 const process = require('process');
 const {authenticate} = require('@google-cloud/local-auth');
 const {google} = require('googleapis');
+const express = require('express');
+const cors = require('cors');
+const routes = require('./routes');
+
+const app = express();
+app.use(cors());
+app.use(express.json());
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/calendar'];
@@ -89,5 +96,13 @@ async function listEvents(auth) {
     console.log(`${start} - ${event.summary}`);
   });
 }
+
+// Rotas da API
+app.use('/api', routes);
+
+const PORT = process.env.PORT || 3001;
+app.listen(PORT, () => {
+  console.log(`API rodando em http://localhost:${PORT}`);
+});
 
 authorize().then(listEvents).catch(console.error);
